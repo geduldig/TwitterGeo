@@ -9,20 +9,38 @@ import os
 import sys
 from TwitterAPI import TwitterAPI, TwitterOAuth, TwitterRestPager
 import urllib
-
+import datetime
 
 GEO = Geocoder()
 
+def parse_date(status):
+	"""
+	expects date in this strange format:  Sun Nov 05 17:14:42 +0000 2017
+	FIXME: try with other twitter timezones please. Might need %z ?
+	TODO: Ending downloads as soon as cutoff datetime is reached?
+	"""
+	return datetime.datetime.strptime(status['created_at'], 
+									  '%a %b %d %H:%M:%S +0000 %Y')
+
+def unique_name(status):
+	"""
+	Unique filename for images, concatenating screen_name and timestamp
+	""" 
+	screen_name = status['user']['screen_name']
+	when = parse_date(status).strftime('%Y%m%d-%H%M%S')
+	file_name = screen_name + "_" + when
+	return file_name
 
 def download_photo(status, photo_dir):
 	"""Download photo(s) from embedded url(s)."""
 	if 'media' in status['entities']:
 		for media in status['entities'].get('media'):
 			if media['type'] == 'photo':
+				file_name = unique_name(status)
 				photo_url = media['media_url_https']
-				screen_name = status['user']['screen_name']
-				file_name = os.path.join(photo_dir, screen_name) + '.' + photo_url.split('.')[-1]
-				urllib.urlretrieve(photo_url, file_name)
+				file_name += '.' + photo_url.split('.')[-1]
+				urllib.urlretrieve(photo_url, os.path.join(photo_dir, file_name))
+				print ("IMAGE: %s" % file_name)
 
 
 def lookup_geocode(status):
@@ -37,16 +55,20 @@ def lookup_geocode(status):
 				print('GEOCODER QUOTA EXCEEDED: %s' % GEO.count_request)
 
 
-def process_tweet(status, photo_dir, stalk):
-	print('\n%s: %s' % (status['user']['screen_name'], status['text']))
-	print(status['created_at'])
-	if photo_dir:
-		download_photo(status, photo_dir)
-	if stalk:
-		lookup_geocode(status)
+def process_tweet(status, photo_dir, stalk, no_images_of_retweets):
+	print('\nUSER: %s\nTWEET: %s' % (status['user']['screen_name'], status['text']))
+	print('DATE: %s' % status['created_at'])
+	
+	try:
+		if photo_dir and not no_images_of_retweets:
+			download_photo(status, photo_dir)
+		if stalk:
+			lookup_geocode(status)
+	except Exception as e:
+		print ("ALERT exception ignored: %s %s" % (type(e), e))
 
 
-def search_tweets(api, word_list, photo_dir, region, stalk, no_retweets, count):
+def search_tweets(api, word_list, photo_dir, region, stalk, no_retweets, no_images_of_retweets, count):
 	"""Get tweets containing any words in 'word_list'."""
 	words = ' OR '.join(word_list)
 	params = {'q':words, 'count':count}
@@ -57,7 +79,7 @@ def search_tweets(api, word_list, photo_dir, region, stalk, no_retweets, count):
 		for item in pager.get_iterator():
 			if 'text' in item:
 				if not no_retweets or not item.has_key('retweeted_status'):
-					process_tweet(item, photo_dir, stalk)
+					process_tweet(item, photo_dir, stalk, no_images_of_retweets)
 			elif 'message' in item:
 				if item['code'] == 131:
 					continue # ignore internal server error
@@ -79,7 +101,8 @@ if __name__ == '__main__':
 	parser.add_argument('-count', type=int, default=15, help='download batch size')
 	parser.add_argument('-location', type=str, help='limit tweets to a place')
 	parser.add_argument('-oauth', metavar='FILENAME', type=str, help='read OAuth credentials from file')
-	parser.add_argument('-no_retweets', action='store_true', help='exclude re-tweets')
+	parser.add_argument('-no_retweets', action='store_true', help='exclude re-tweets completely')
+	parser.add_argument('-no_images_of_retweets', action='store_true', help='exclude re-tweet images')
 	parser.add_argument('-photo_dir', metavar='DIRECTORYNAME', type=str, help='download photos to this directory')
 	parser.add_argument('-stalk', action='store_true', help='print tweet location')
 	parser.add_argument('-words', metavar='W', type=str, nargs='+', help='word(s) to search')
@@ -98,7 +121,7 @@ if __name__ == '__main__':
 			print('Google found region at %f,%f with a radius of %s km' % (lat, lng, radius))
 		else:
 			region = None
-		search_tweets(api, args.words, args.photo_dir, region, args.stalk, args.no_retweets, args.count)
+		search_tweets(api, args.words, args.photo_dir, region, args.stalk, args.no_retweets, args.no_images_of_retweets, args.count)
 	except KeyboardInterrupt:
 		print('\nTerminated by user\n')
 	except Exception as e:
