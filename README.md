@@ -31,7 +31,11 @@ For help:
 	
 Authentication
 --------------
-See TwitterAPI documentation.
+See TwitterAPI documentation:
+
+* ['create  your app'](https://apps.twitter.com)
+* [file format](http://pythonhosted.org/TwitterAPI/twitteroauth.html )
+* [explanations](https://developer.twitter.com/en/docs/basics/getting-started)
 
 Geocoder
 --------
