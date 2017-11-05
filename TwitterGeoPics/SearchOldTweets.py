@@ -28,7 +28,9 @@ def unique_name(status):
 	""" 
 	screen_name = status['user']['screen_name']
 	when = parse_date(status).strftime('%Y%m%d-%H%M%S')
-	file_name = screen_name + "_" + when
+	# file_name = screen_name + "_" + when
+	# file_name = when + "_" + screen_name
+	file_name = when + "_" + screen_name
 	return file_name
 
 def download_photo(status, photo_dir):
