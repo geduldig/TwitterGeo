@@ -44,3 +44,16 @@ Dependencies
 * TwitterAPI
 * pygeocoder
 * Fridge
+
+Install
+-------
+
+    python3 -m venv env  
+    source env/bin/activate  
+    python3 setup.py build  
+    python3 setup.py install  
+    pip3 install --upgrade setuptools wheel
+    pip3 install fridge pygeocoder TwitterAPI
+
+
+
