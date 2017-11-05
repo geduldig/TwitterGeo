@@ -52,14 +52,14 @@ Dependencies
 Install
 -------
 
-    python3 -m venv env  
-    source env/bin/activate  
+    python3 -m venv env/py3  
+    source env/py3/bin/activate  
     pip3 install --upgrade setuptools wheel
     pip3 install fridge pygeocoder TwitterAPI
     python3 setup.py build  
     python3 setup.py install  
 
-or
+or python2.7
 
     deactivate
     virtualenv env/py2

@@ -39,4 +39,4 @@ nosetests.xml
 # drandreaskrueger:
 env
 twitterapi-oauth.txt
-
+photos/
