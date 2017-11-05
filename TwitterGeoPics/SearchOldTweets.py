@@ -102,6 +102,6 @@ if __name__ == '__main__':
 	except KeyboardInterrupt:
 		print('\nTerminated by user\n')
 	except Exception as e:
-		print('*** STOPPED %s\n' % e)
+		print('*** STOPPED %s %s\n' % (type(e), e))
 		
 	GEO.print_stats()
