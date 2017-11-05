@@ -54,10 +54,20 @@ Install
 
     python3 -m venv env  
     source env/bin/activate  
-    python3 setup.py build  
-    python3 setup.py install  
     pip3 install --upgrade setuptools wheel
     pip3 install fridge pygeocoder TwitterAPI
+    python3 setup.py build  
+    python3 setup.py install  
 
+or
+
+    deactivate
+    virtualenv env/py2
+    python --version
+    source env/py2/bin/activate
+    pip install --upgrade setuptools wheel
+    pip install fridge pygeocoder TwitterAPI
+    python setup.py build
+    python setup.py install
 
 
