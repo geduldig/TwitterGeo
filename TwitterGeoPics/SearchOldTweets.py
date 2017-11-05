@@ -60,7 +60,7 @@ def process_tweet(status, photo_dir, stalk, no_images_of_retweets):
 	print('DATE: %s' % status['created_at'])
 	
 	try:
-		if photo_dir and not no_images_of_retweets:
+		if photo_dir and not (no_images_of_retweets and status.has_key('retweeted_status')):
 			download_photo(status, photo_dir)
 		if stalk:
 			lookup_geocode(status)
