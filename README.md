@@ -31,7 +31,11 @@ For help:
 	
 Authentication
 --------------
-See TwitterAPI documentation.
+See TwitterAPI documentation:
+
+* ['create  your app'](https://apps.twitter.com)
+* [file format](http://pythonhosted.org/TwitterAPI/twitteroauth.html )
+* [explanations](https://developer.twitter.com/en/docs/basics/getting-started)
 
 Geocoder
 --------
@@ -44,3 +48,26 @@ Dependencies
 * TwitterAPI
 * pygeocoder
 * Fridge
+
+Install
+-------
+
+    python3 -m venv env/py3  
+    source env/py3/bin/activate  
+    pip3 install --upgrade setuptools wheel
+    pip3 install fridge pygeocoder TwitterAPI
+    python3 setup.py build  
+    python3 setup.py install  
+
+or python2.7
+
+    deactivate
+    virtualenv env/py2
+    python --version
+    source env/py2/bin/activate
+    pip install --upgrade setuptools wheel
+    pip install fridge pygeocoder TwitterAPI
+    python setup.py build
+    python setup.py install
+
+
